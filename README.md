@@ -1,24 +1,54 @@
-## Overview
+# 🏥 DiabetesReadmit-ML
+ 
+> Predicting 30-day hospital readmission in diabetic patients using Logistic Regression - featuring full data cleaning, EDA, and interactive dashboards built in Plotly, Tableau, Power BI, and Streamlit.
 
-Hospital readmission within 30 days is one of the most costly and preventable problems in modern healthcare. In the U.S. alone, preventable readmissions cost an estimated **$26 billion annually**, and hospitals face penalties under Medicare's Hospital Readmissions Reduction Program (HRRP) for excessive rates.
+---
 
-This project builds an end-to-end machine learning pipeline to **predict whether a diabetic patient will be readmitted within 30 days of discharge**, using clinical and administrative data routinely collected during hospital stays.
+# Table of Contents
+
+- [Project Overview](#-project-overview)
+- [Dataset](#-dataset)
+- [Project Structure](#-project-structure)
+- [Pipeline Overview](#-pipeline-overview)
+- [Data Cleaning](#-data-cleaning)
+- [Exploratory Data Analysis](#-exploratory-data-analysis)
+- [Machine Learning](#-machine-learning)
+- [Dashboards](#-dashboards)
+- [How to Run](#-how-to-run)
+- [Requirements](#-requirements)
+
+## Project Overview
+
+Hospital readmission within 30 days is one of the most costly and preventable problems in modern healthcare. In the U.S., preventable readmissions cost an estimated **$26 billion annually**, and hospitals face penalties under Medicare's Hospital Readmissions Reduction Program (HRRRP) for excessive rates.
+
+This project builds an end-to-end machine learning pipeline to **predict whether a diabetic patient will be readmitted within 30days of discharge**, using clinical and administrative data routinely collected during hospital stays.
+
+### Research Question
+> *Can we accurately predict 30-day hospital readmission in diabetic patients using routine clinical data - and which patient features drive that risk most strongly?*
 
 ### 🎯 Research Question
 > *Can we accurately predict 30-day hospital readmission in diabetic patients using routine clinical data - and which patient features drive that risk most strongly?*
 
-## 📊 Dataset
+## Key Findings
+ - Logistic Regression achieved **ROC-AUC ≈ 0.68** with **Recall ≈ 0.37** at threshold 0.35
+ - ***Prior inpatient visits* and **number of medications** are the strongest predictors
+ - Only **11.2%** of encounters result in early readmission - severe class imbalance requiring SMOTE
+ - Middle-aged groups (40-60) have **higher** early readmission rates than the elderly - counter-intuitive and clinically meaningful
+ - LR was chosen for its **interpretability** - critical in healthcare where clinicians need to understand why a patient is flagged.
 
+## 📊 Dataset
+ 
 | Property | Detail |
 |---|---|
 | **Name** | Diabetes 130-US Hospitals (1999–2008) |
 | **Source** | [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/Diabetes+130-US+hospitals+for+years+1999-2008) |
 | **Records** | 101,766 patient encounters |
 | **Features** | 50 (demographic, clinical, medication, diagnostic) |
-| **Target** | `readmitted` → binarized to `<30 days` vs. `not` |
-| **Class Balance** | 11.2% positive (readmitted <30d) - severely imbalanced |
-| **Time Period** | 1999 – 2008 |
+| **Target** | `readmitted` → binarized: `<30 days` = 1, else = 0 |
+| **Class Balance** | 11.2% positive - severely imbalanced |
+| **Time Period** | 1999 - 2008 |
 | **Hospitals** | 130 U.S. hospitals and integrated delivery networks |
+
 
 ### Target Variable Distribution
 
@@ -36,258 +66,277 @@ This project builds an end-to-end machine learning pipeline to **predict whether
 DiabetesReadmit-ML/
 │
 ├── data/
-│   ├── diabetic_data.csv              # Raw dataset 
-│   ├── IDS_mapping.csv                # ID mapping file
-│   └── diabetic_cleaned.csv           # Cleaned dataset 
+│   ├── diabetic_data.csv                            # Raw dataset (download from UCI)
+│   ├── IDS_mapping.csv                              # ID mapping file
+│   └── diabetic_cleaned.csv                         # Output of cleaning script
+│
+├── diabetes_hospitsl_readmission_cleaning.py
+├── diabetes_plotly_visualizations.py
+├── streamlit-app-logistic-regressions.py
 │
 ├── images/
-│   ├── ReadmissionOutcomesbyPatientRace(TablueauV6).png
-│   ├── ReadmissionRateByHospitalStayLengthAndDiagnosisCount(TablueauV4).png
-│   ├── Top10MedicalSpecialtiesByEarlyReadmissionRate(TableauV5).png
-│   ├── tablueay_dashboard.png
+│   ├── ReadmissionRateByAgeGroup(plotlyV1).png
+│   ├── MedicationsByReadmissionStatus(plotlyV2).png
+│   ├── ReadmissionOutcomeByInsulinUsage(plotlyV3).png
+│   ├── ReadmissionRateByHospitalStayLengthAndDiagnosisCount(TableauV4).png
+│   ├── Top10MedicalSpecialtiesbyEarlyReadmissionRate(TableauV5).png
+│   ├── ReadmissionOutcomesbyPatientRace(TableauV6).png
+│   ├── ReadmissionRateByAdmissionSource&Type(PowerBIV7).png
+│   ├── LabProcedureIntensityVsReadmissionRate(PowerBIV8).png
+│   ├── ClinicalComplexity:HospitalStayVsDiagnosisCount(PowerBIV9).png
+│   ├── tableau_dashboard.png
+│   └── PowerBI_dashboard.png
 │
-├── diabetes_hospital_readmission_cleaning.py
-│
-├──  diabetes_plotly_visualizations.py
-│
-└── README.md
+├── requirements.txt
+└── README.md  
+
 ```
 
+---
+
+## Pipeline Overview
+ 
+```
+Raw Data (diabetic_data.csv + IDS_mapping.csv)
+        │
+        ▼
+[diabetes_hospital_readmission_cleaning.py]
+  • Replace ? with NaN
+  • Drop weight, encounter_id, patient_nbr
+  • Remove deceased patients
+  • Impute missing categoricals
+  • Binarize target variable
+  • Map age to numeric midpoints
+        │
+        ▼
+diabetic_cleaned.csv
+        │
+        ├──────────────────────────────┬──────────────────────────────┐
+        ▼                              ▼                              ▼
+[diabetes_plotly_               [Tableau Public]              [Power BI Desktop]
+ visualizations.py]              Visuals 4, 5, 6               Visuals 7, 8, 9
+ Visuals 1, 2, 3
+        │
+        ▼
+[streamlit-app-logistic-regressions.py]
+  Trains LR model live
+  11 interactive ML visuals across 5 pages
+```
+ 
 ---
 
 ## Data Cleaning
 
-All cleaning is handled in `diabetes_hospital_readmission_cleaning.py`. Run it first - it outputs `diabetic_cleaned.csv`.
-
+Handled in `diabetes_hospital_readmission_cleaning.py`. Files required `diabetic_data.csv` + `IDS_mapping.csv`. Outputs `diabetic_cleaned.csv`.
+ 
 | Step | Action | Reason |
 |---|---|---|
-| 1 | Replace `?` with `NaN` | Missing values were encoded as `?` |
-| 2 | Drop `weight` column | 96.9% missing - unusable |
+| 1 | Replace `?` with `NaN` | Missing values encoded as `?` not standard NaN |
+| 2 | Drop `weight` | 96.9% missing — unusable |
 | 3 | Drop `encounter_id`, `patient_nbr` | ID columns, no predictive value |
-| 4 | Remove deceased patients (discharge = 11, 13, 14) | Readmission irrelevant for deceased |
-| 5 | Remove `Unknown/Invalid` gender | Only 3 records, noise |
-| 6 | Fill `race`, `medical_specialty`, `payer_code` → `"Unknown"` | Preserve records, signal absence |
+| 4 | Remove discharge = 11 | Deceased patients — readmission meaningless |
+| 5 | Remove `Unknown/Invalid` gender | 3 records, introduces noise |
+| 6 | Fill `race`, `medical_specialty`, `payer_code` → `"Unknown"` | Preserve records |
 | 7 | Fill `diag_1/2/3` → `"0"` | Indicate missing diagnosis code |
-| 8 | Binarize target: `<30` → 1, else → 0 | Frame as binary classification |
-| 9 | Map age brackets → numeric midpoints | Enable use as continuous feature |
-
-**Before cleaning:** 101,766 rows × 50 columns
-**After cleaning:** ~100,121 rows × 49 columns
+| 8 | Binarize target: `<30` → 1, else → 0 | Binary classification framing |
+| 9 | Map age brackets → numeric midpoints | Enable as continuous feature |
+| 10 | Convert numeric columns | Correct dtypes for modelling |
+ 
+**Before:** 101,766 rows × 50 columns → **After:** ~100,000 rows × 49 columns
 
 ---
 
 ## 📈 Exploratory Data Analysis
+ 
+### Plotly Visuals ( `diabetes_plotly_visualizations.py`)
+ 
+**Visual 1 - Readmission Rate by Age Group**
+ 
+![V1](images/ReadmissionRateByAgeGroup(PlotlyV1).png)
 
-Three Plotly visualizations were created in `diabetes_plotly_visualizations.py` and three additional Tableau visualizations in `diabetes_hospital_readmission_cleaning.py`, completing the EDA dashboard.
-
-### Plotly Visualizations 
-
-| # | Chart | Key Insight |
-|---|---|---|
-| 1 | Bar: Readmission rate by age group | Middle-aged groups (40–60) have *higher* early readmission than elderly - counter-intuitive |
-
-| 2 | Box plot: Medications by readmission status | Patients readmitted <30d have ~18 median medications vs ~15 for non-readmitted |
-| 3 | Grouped bar: Insulin usage vs readmission | "Up" insulin adjustments correlate with higher early readmission - signals worsening control |
-
-### Tableau Visualizations
-
-| # | Chart | Key Insight |
-|---|---|---|
-| 4 | Heatmap: Time in hospital × Number of diagnoses | High stay length + high diagnosis count = highest readmission risk cells |
-
-!(images/ReadmissionRateByHospitalStayLengthAndDiagnosisCount(TablueauV4).png)
-
-| 5 | Bar: Top 10 medical specialties by readmission rate | Certain specialties (e.g., Internal Medicine) show systematically higher readmission rates |
-
-!(images/Top10MedicalSpecialtiesByEarlyReadmissionRate(TableauV5).png)
-
-| 6 | 100% Stacked bar: Readmission by race | Demographic disparities visible in <30d readmission proportions across racial groups |
-
-!(images/ReadmissionOutcomesbyPatientRace(TablueauV6).png)
-
-### How EDA Informed Modeling
-- Severe class imbalance → **SMOTE required**
-- Non-linear age/readmission pattern → **tree-based model preferred over linear**
-- Prior utilization gradient → **engineer `prior_utilization` composite feature**
-
+Middle-aged groups (40 - 60) show higher early readmission rates than the elderly - likely because older patients receive more intensive post-discharge coordination. Age is an important ML feature.
+ 
 ---
 
-## 🤖 Machine Learning
+**Visual 2 - Medications by Readmission Status**
+ 
+![V2](images/MedicationsByReadmissionStatus(PlotlyV2).png)
+ 
+Patients readmitted within 30 days carry a higher median medication count (~18 vs ~15), reflecting greater disease complexity. `num_medications` is a strong LR predictor.
+ 
+---
 
-All ML code is in `3_ml_pipeline.py`. Run in Google Colab after `1_data_cleaning.py`.
+**Visual 3 - Readmission Outcome by Insulin Usage**
+ 
+![V3](images/ReadmissionOutcomeByInsulinUsage(plotlyV3).png)
+ 
+Patients with upward insulin dose adjustments show a higher proportion of early readmissions - signalling worsening glycaemic control during the encounter.
+ 
+---
 
-### Features Used (18 total)
+### Tableau Visuals
 
-| Type | Features |
-|---|---|
-| Numeric | `age_numeric`, `time_in_hospital`, `num_lab_procedures`, `num_procedures`, `num_medications`, `number_diagnoses`, `prior_utilization`*, `med_change_count`* |
-| Categorical | `race`, `gender`, `insulin`, `change`, `diabetesMed`, `diag1_category`*, `A1Cresult`, `max_glu_serum`, `admission_type_id`, `discharge_disposition_id` |
+Tableau Public Link - https://public.tableau.com/views/DiabetesReadmitVisuals/Dashboard1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link 
+ 
+**Visual 4 - Readmission Rate by Hospital Stay Length and Diagnosis Count**
+ 
+![V4](images/ReadmissionRateByHospitalStayLengthAndDiagnosisCount(TableauV4).png)
+ 
+High stay length combined with high diagnosis count produces the darkest readmission risk cells - combined clinical complexity is a stronger predictor than either feature alone.
+ 
+---
+ 
+**Visual 5 - Top 10 Medical Specialties by Early Readmission Rate**
+ 
+![V5](images/Top10MedicalSpecialtiesbyEarlyReadmissionRate(TableauV5).png)
+ 
+Certain specialties show systematically higher early readmission rates, suggesting they treat higher-acuity patients or have gaps in discharge planning protocols.
+ 
+---
+ 
+**Visual 6 - Readmission Outcomes by Patient Race**
+ 
+![V6](images/ReadmissionOutcomesbyPatientRace(TableauV6).png)
+ 
+Demographic disparities in early readmission proportions are visible across racial groups — an equity consideration for any clinical deployment of the model.
+ 
+**Full Tableau Dashboard:**
+ 
+![Tableau Dashboard](images/tableau_dashboard.png)
+ 
+---
 
-*\* Engineered features*
+### Power BI Visuals
+ 
+**Visual 7 - Readmission Rate by Admission Source and Type**
+ 
+![V7](images/ReadmissionRateByAdmissionSource&Type(PowerBIV7).png)
+ 
+Emergency admissions show the highest early readmission rates - admission context is a meaningful predictor.
+ 
+---
+ 
+**Visual 8 - Lab Procedure Intensity vs Readmission Rate**
+ 
+![V8](images/LabProcedureIntensityVsReadmissionRate(PowerBIV8).png)
+ 
+Higher lab procedure counts correlate with increased readmission risk - reflecting greater diagnostic workup for more severely ill patients.
+ 
+---
+ 
+**Visual 9 - Clinical Complexity: Hospital Stay vs Diagnosis Count**
+ 
+![V9](images/ClinicalComplexity:HospitalStayVsDiagnosisCount(PowerBIV9).png)
+ 
+The combined complexity marker of stay length and diagnosis count predicts readmission risk - consistent with the Tableau heatmap finding.
+ 
+**Full Power BI Dashboard:**
+ 
+![Power BI Dashboard](images/PowerBI_dashboard.png)
+ 
+---
 
-### Engineered Features
+## Machine Learning
+ 
+All ML logic is inside `streamlit-app-logistic-regressions.py`. It trains directly from `diabetic_cleaned.csv` every time the app loads, cached with `@st.cache_data`.
 
-```python
-# 1. Prior healthcare burden (proxy for chronic illness severity)
-prior_utilization = number_outpatient + number_emergency + number_inpatient
-
-# 2. Medication adjustment activity
-med_change_count = count of medication columns where value is 'Up' or 'Down'
-
-# 3. ICD-9 diagnosis category (reduces ~900 codes to 8 clinical groups)
-diag1_category = map(diag_1 → Diabetes / Circulatory / Respiratory / ...)
-```
+### Why Logistic Regression?
+ 
+LR coefficients directly explain which features increase or decrease readmission probability - in healthcare, clinicians need to understand *why* a patient is flagged, not just *that* they are. LR provides that transparency without sacrificing meaningful performance.
 
 ### Modeling Approach
-
+ 
 ```
-Cleaned Data
-     │
-     ▼
-Stratified Train/Test Split (80% / 20%)
-     │
-     ├── Training set → SMOTE → Balanced training set (50/50)
-     │                              │
-     │              ┌───────────────┴────────────────┐
-     │              ▼                                ▼
-     │     Logistic Regression              Random Forest
-     │     (StandardScaler +                (200 trees,
-     │      L2, C=1.0)                       max_depth=15,
-     │                                       class_weight='balanced')
-     │
-     └── Test set (untouched, true distribution)
-              │
-              ▼
-         Evaluation
+diabetic_cleaned.csv
+        │
+        ▼
+Stratified split: 70% train | 10% validation | 20% test
+        │
+        ▼
+SMOTE on training set ONLY → balanced 50/50 classes (no leakage)
+        │
+        ▼
+StandardScaler fitted on train only → applied to val and test
+        │
+        ▼
+Logistic Regression (C=0.1, class_weight='balanced', max_iter=1000)
+        │
+        ├── Threshold sweep on validation: 0.10 / 0.25 / 0.35 / 0.50
+        │   Chosen: 0.35 (maximises recall, improves precision)
+        │
+        └── Final evaluation on untouched test set
+            + 5-fold stratified cross-validation for stability
 ```
-
-> ⚠️ **Important:** SMOTE is applied **after** the train/test split to prevent data leakage into the test set.
-
-### Model Results
-
-| Metric | Logistic Regression | Random Forest |
-|---|---|---|
-| **ROC-AUC** | 0.6821 | **0.7143** |
-| **F1 Score** | 0.2634 | **0.2891** |
-| **Recall** | 0.3712 | **0.4105** |
-| **Precision** | 0.2041 | **0.2218** |
-
-### Top 8 Features by Importance (Random Forest)
-
-| Rank | Feature | Importance |
-|---|---|---|
-| 1 | `prior_utilization` | 0.1423 |
-| 2 | `num_medications` | 0.1187 |
-| 3 | `time_in_hospital` | 0.1052 |
-| 4 | `num_lab_procedures` | 0.0934 |
-| 5 | `age_numeric` | 0.0871 |
-| 6 | `number_diagnoses` | 0.0812 |
-| 7 | `med_change_count` | 0.0754 |
-| 8 | `num_procedures` | 0.0698 |
-
+ 
+### Results (threshold = 0.35)
+ 
+| Metric | Score |
+|---|---|
+| ROC-AUC | ~0.68 |
+| Recall | ~0.37 |
+| F1 (positive) | ~0.26 |
+| Precision | ~0.20 |
+| Balanced Accuracy | ~0.65 |
+ 
+*Exact values computed live from your data when the Streamlit app runs.*
+ 
 ---
-
-## 📊 Dashboards
-
-Four dashboards were built across four different tools, satisfying the requirement for 3 covered-in-class tools + 1 self-learned tool.
-
-| Dashboard | Tool | Visuals | Audience |
+ 
+## Dashboards
+ 
+| Dashboard | Tool | Visuals | Type |
 |---|---|---|---|
-| Midterm 1 | **Plotly** (Google Colab) | Class imbalance, medications box plot, insulin bar | EDA stage |
-| Midterm 2 | **Tableau** | Heatmap, specialty bar, race stacked bar | EDA stage |
-| Final 1 | **Power BI** | Model metrics comparison, feature importance, risk donut + KPIs | ML results |
-| Final 2 | **Streamlit** *(self-learned)* | ROC curves, risk score histogram, actual vs predicted by group | ML results |
+| EDA | **Plotly** (Colab) | V1, V2, V3 | EDA |
+| EDA | **Tableau** | V4, V5, V6 | EDA |
+| ML Results | **Power BI** | V7, V8, V9 | ML |
+| ML Results | **Streamlit** *(self-learned)* | 11 live visuals | ML |
 
-### Running the Streamlit Dashboard
-
-```bash
-# 1. Install dependencies
-pip install streamlit plotly pandas
-
-# 2. Place these 4 files in the same folder as streamlit_app.py:
-#    ml_results.csv, feature_importances.csv, model_metrics.csv, roc_curves.csv
-
-# 3. Run
-streamlit run 5_streamlit_app.py
-
-# 4. Opens at http://localhost:8501
-```
-
-### Streamlit Dashboard Features
-- 🔴 **ROC Curve** - both models overlaid with AUC scores
-- 📊 **Risk Score Histogram** - predicted probabilities split by true outcome
-- 📉 **Actual vs Predicted** - grouped bar by age / diagnosis / risk tier / gender (dropdown)
-- 🎛️ **Sidebar filters** - risk tier, gender, diagnosis category (updates all charts live)
-- 📌 **KPI cards** - total patients, model accuracy, % high risk, avg risk score
-
----
-
-## ▶️ How to Run
-
-### Step 1 - Clean the Data (Google Colab)
-```python
-# In Google Colab:
-# 1. Upload diabetic_data.csv when prompted
-# 2. Run all cells in 1_data_cleaning.py
-# 3. Download diabetic_cleaned.csv
-```
-
-### Step 2 - EDA Visualizations (Google Colab)
-```python
-# 1. Upload diabetic_cleaned.csv when prompted
-# 2. Run all cells in 2_plotly_visualizations.py
-# 3. Charts render inline in Colab
-```
-
-### Step 3 - Train ML Models (Google Colab)
-```python
-# 1. Upload diabetic_cleaned.csv when prompted
-# 2. Run all cells in 3_ml_pipeline.py
-# 3. Cell 14 auto-downloads 4 CSV files:
-#    ml_results.csv, feature_importances.csv,
-#    model_metrics.csv, roc_curves.csv
-```
-
-### Step 4 - Streamlit Dashboard (Local)
+ ### Run Streamlit Locally
+ 
 ```bash
 pip install -r requirements.txt
-streamlit run dashboard/5_streamlit_app.py
+streamlit run streamlit-app-logistic-regressions.py
+# Opens at http://localhost:8501
 ```
 
-### Step 5 - Power BI Dashboard
-Load the 3 output CSVs into Power BI Desktop:
-- `ml_results.csv` → risk distribution donut + KPI cards
-- `feature_importances.csv` → feature importance bar chart
-- `model_metrics.csv` → model comparison bar chart
-
-### Step 6 - Tableau Dashboard
-Load `diabetic_cleaned.csv` into Tableau Public for the 3 EDA visualizations.
-
+### Run Streamlit on Google Colab
+ 
+```python
+# Cell 1
+!pip install -q streamlit imbalanced-learn shap plotly pyngrok
+ 
+# Cell 2 — upload app + diabetic_cleaned.csv to /content/ first
+from pyngrok import ngrok
+import subprocess, threading, time
+ngrok.set_auth_token("YOUR_NGROK_TOKEN_HERE")
+threading.Thread(
+    target=lambda: subprocess.run(
+        ["streamlit", "run", "/content/streamlit-app-logistic-regressions.py",
+         "--server.port", "8501", "--server.headless", "true"]
+    ), daemon=True
+).start()
+time.sleep(4)
+print("Open →", ngrok.connect(8501))
+```
+ 
 ---
 
-## 📦 Requirements
-
-```txt
+## Requirements
+ 
+```
 pandas
 numpy
 scikit-learn
 imbalanced-learn
 plotly
 streamlit
+shap
+pyngrok
 ```
-
-Install all at once:
+ 
 ```bash
 pip install -r requirements.txt
 ```
+ 
+---
 
-For Google Colab, `imbalanced-learn` is installed inline:
-```python
-!pip install imbalanced-learn --quiet
-```
-
-
-
-<p align="center">
-  Built with Python · Scikit-learn · Plotly · Streamlit · Tableau · Power BI
-</p>
