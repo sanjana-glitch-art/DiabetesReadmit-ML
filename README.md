@@ -30,7 +30,7 @@ This project builds an end-to-end machine learning pipeline to **predict whether
 > *Can we accurately predict 30-day hospital readmission in diabetic patients using routine clinical data - and which patient features drive that risk most strongly?*
 
 ## Key Findings
- - Logistic Regression achieved **ROC-AUC ≈ 0.68** with **Recall ≈ 0.37** at threshold 0.35
+ - Logistic Regression achieved **ROC-AUC ≈ 0.6365** with **Recall ≈ 0.9665** at threshold 0.35
  - ***Prior inpatient visits* and **number of medications** are the strongest predictors
  - Only **11.2%** of encounters result in early readmission - severe class imbalance requiring SMOTE
  - Middle-aged groups (40-60) have **higher** early readmission rates than the elderly - counter-intuitive and clinically meaningful
@@ -273,17 +273,17 @@ Logistic Regression (C=0.1, class_weight='balanced', max_iter=1000)
 | Metric | Score |
 |---|---|
 | ROC-AUC | 0.6365 |
-| Recall | 0.9865 |
+| Recall | 0.9665 |
 | F1 (positive class) | 0.2132 |
 | Precision | 0.1198 |
 | Accuracy | 0.1912 |
-| Balanced Accuracy | 0.5263 |
+| Balanced Accuracy | 0.5293 |
 | PR-AUC | 0.1962 |
 | Brier Score | 0.2330 |
 
 **5-Fold Cross-Validation:** Mean AUC = 0.6425 | Std = 0.0083 | Stability = Stable
 
-> **Note on threshold choice:** Threshold 0.35 prioritizes recall - catching nearly all true readmissions (0.9865) at the cost of lower precision (0.1198). This trade-off is appropriate in a clinical context where missing a high-risk patient is more costly than a false alarm. Raising the threshold to 0.50 improves precision but misses ~48% of true positives.
+> **Note on threshold choice:** Threshold 0.35 prioritizes recall - catching nearly all true readmissions (0.9665) at the cost of lower precision (0.1198). This trade-off is appropriate in a clinical context where missing a high-risk patient is more costly than a false alarm. Raising the threshold to 0.50 improves precision but misses ~48% of true positives.
  
 ### Top LR Coefficients
 
