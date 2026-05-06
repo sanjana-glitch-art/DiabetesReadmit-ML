@@ -272,24 +272,55 @@ Logistic Regression (C=0.1, class_weight='balanced', max_iter=1000)
  
 | Metric | Score |
 |---|---|
-| ROC-AUC | ~0.68 |
-| Recall | ~0.37 |
-| F1 (positive) | ~0.26 |
-| Precision | ~0.20 |
-| Balanced Accuracy | ~0.65 |
+| ROC-AUC | 0.6365 |
+| Recall | 0.9865 |
+| F1 (positive class) | 0.2132 |
+| Precision | 0.1198 |
+| Accuracy | 0.1912 |
+| Balanced Accuracy | 0.5263 |
+| PR-AUC | 0.1962 |
+| Brier Score | 0.2330 |
+
+**5-Fold Cross-Validation:** Mean AUC = 0.6425 | Std = 0.0083 | Stability = Stable
+
+> **Note on threshold choice:** Threshold 0.35 prioritizes recall - catching nearly all true readmissions (0.9865) at the cost of lower precision (0.1198). This trade-off is appropriate in a clinical context where missing a high-risk patient is more costly than a false alarm. Raising the threshold to 0.50 improves precision but misses ~48% of true positives.
  
-*Exact values computed live from your data when the Streamlit app runs.*
- 
+### Top LR Coefficients
+
+| Rank | Feature | Coefficient |
+|---|---|---|
+| 1 | number_inpatient | 0.3637 |
+| 2 | discharge_disposition_id | 0.1369 |
+| 3 | number_diagnoses | 0.1264 |
+| 4 | age_numeric | 0.0896 |
+| 5 | num_medications | 0.0683 |
+| 6 | number_emergency | 0.0606 |
+| 7 | num_lab_procedures | 0.0291 |
+| 8 | time_in_hospital | 0.0260 |
+| 9 | admission_source_id | 0.0077 |
+| 10 | admission_type_id | -0.0297 |
+
+`number_inpatient` dominates by a large margin - prior healthcare utilization is far more predictive than any single clinical measurement taken during the current encounter. SHAP analysis confirms this ranking.
 ---
  
 ## Dashboards
  
-| Dashboard | Tool | Visuals | Type |
+| Tool | Visuals | Source | Purpose |
 |---|---|---|---|
-| EDA | **Plotly** (Colab) | V1, V2, V3 | EDA |
-| EDA | **Tableau** | V4, V5, V6 | EDA |
-| ML Results | **Power BI** | V7, V8, V9 | ML |
-| ML Results | **Streamlit** *(self-learned)* | 11 live visuals | ML |
+| **Plotly** | V1, V2, V3 | `diabetes_plotly_visualizations.py` | EDA |
+| **Tableau** | V4, V5, V6 | Tableau Public | EDA |
+| **Power BI** | V7, V8, V9 | Power BI Desktop | EDA + ML context |
+| **Streamlit** | 11 live visuals across 5 pages | `streamlit-app-logistic-regressions.py` | Full ML pipeline |
+
+### Streamlit Pages
+
+| Page | Content |
+|---|---|
+| Overview | Dataset stats (100,121 rows, 49 cols, 11.34% positive), split summary, SMOTE balance |
+| EDA Insights | Class imbalance chart, inpatient visits boxplot, medications boxplot, age group bar chart, correlation heatmap |
+| Logistic Regression Results | Threshold comparison, metrics table, confusion matrix, 5-fold CV chart, ROC curve, PR curve |
+| Interpretation | LR coefficient bar chart + table, SHAP mean absolute contribution chart |
+| Methodology Notes | All modeling decisions documented for reproducibility |
 
  ### Run Streamlit Locally
  
