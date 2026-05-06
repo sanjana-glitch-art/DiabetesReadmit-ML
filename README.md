@@ -168,7 +168,7 @@ Patients readmitted within 30 days carry a higher median medication count (~18 v
 
 **Visual 3 - Readmission Outcome by Insulin Usage**
  
-![V3](images/ReadmissionOutcomeByInsulinUsage(plotlyV3).png)
+![V3](images/ReadmissionOutcomeByInsulinUsage(PlotlyV3).png)
  
 Patients with upward insulin dose adjustments show a higher proportion of early readmissions - signalling worsening glycaemic control during the encounter.
  
